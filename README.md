@@ -10,7 +10,7 @@ So, this simple Chrome/Opera/Firefox extension aims to give these superusers som
 1. Pressing Alt+Shift+P would insert `\pi` directly.
 2. Pressing Alt+Shift+R would insert `\mathrm{%caret%}` with the caret auto-placed in the middle.
 3. Pressing Alt+Shift+R with some `text` pre-selected would insert `\mathrm{text}`.
-4. Prepending Ctrl to any of the above keybindings will auto-surround the inserted text with 
+4. Prepending Ctrl to any of the above keybindings will auto-surround the insertion text with `$$`
 
 **Features:**
 
