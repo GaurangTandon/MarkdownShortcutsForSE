@@ -5,6 +5,8 @@ Many users will simply not adopt mathjax/chem as a part of their posts even afte
 
 So, this simple Chrome/Opera/Firefox extension aims to give these superusers some quick key bindings to speed up the process of editing chem/mathjax into posts.
 
+Update: 24/Mar/2018: All of the features have now been implemented, and this unpacked extension is currently provided as is. Standard MIT License applies.
+
 **Example usage**:
 
 1. Pressing Alt+Shift+P would insert `\pi` directly.
