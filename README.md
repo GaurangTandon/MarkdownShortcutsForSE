@@ -17,3 +17,8 @@ Update: 24/Mar/2018: All of the features have now been implemented, and this unp
 **Features:**
 
 1. The keybinding and its associated insertion text can be modified by the user.
+
+**TODO:**
+
+1. fix the repetitive code for welcome and homework button insertion
+2. keep beta testing, and release in webstore in mid-June
