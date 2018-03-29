@@ -5,23 +5,23 @@ input.replace-apos{
     font-size: 8px !important;
 }
 
-input.replace-bronsted{
+input.homework{
     position: fixed !important; 
     top: 13% !important;
     left: 0% !important;
     font-size: 8px !important;
 }
 
-input.homework{
+input.welcome{
     position: fixed !important; 
     top: 16% !important;
     left: 0% !important;
     font-size: 8px !important;
 }
 
-input.welcome{
+input.accent{
     position: fixed !important; 
     top: 19% !important;
     left: 0% !important;
-    font-size: 8px !important;
+    font-size: 8px !important;    
 }

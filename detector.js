@@ -98,28 +98,36 @@
 		};
 	}
 
-	function replaceBronsted(value) {
-		return value.replace(/Bronsted/g, "Brønsted").replace(/bronsted/g, "brønsted");
+	function fixAccents(value) {
+		// I intentionally skipped the first character in each case
+		// as it needs unnecessary trouble detecting upper case first letter or
+		// lower case	
+		var map = {
+			"ronsted": "rønsted",
+			"uckel": "ückel",
+			"hrodinger": "hrödinger",
+			"illstatter": "illstätter",
+			"(ant Hoff|ant hoff|an't Hoff|an't hoff)": "an 't Hoff",
+			"(der waals|der Waals'|der Waal's|der waals'|der waal's)": "der Waals"
+		};
+
+		for (var key in map)
+			value = value.replace(new RegExp(key, "g"), map[key]);
+
+		return value;
 	}
 
-	function insertBronstedButton() {
-		var btn = document.createElement("input");
-		btn.type = "button";
-		btn.value = "Replace Bronsted";
-		btn.className = "replace-bronsted";
-		document.body.appendChild(btn);
-
-		btn.onclick = function () {
-			var textareas = document.querySelectorAll("textarea, #title");
-			for (var i = 0, len = textareas.length; i < len; i++) {
-				textarea = textareas[i];
-				textarea.value = replaceBronsted(textarea.value);
-			}
-			var editSummary = document.querySelectorAll("input[name='edit-comment']");
-			for (var i = 0, l = editSummary.length; i < l; i++) {
-				editSummary[i].value = "Bronsted correction";
-			}
+	function fixMathjax(value) {
+		var map = {
+			"(ka|Ka)": "K_\mathrm{a}",
+			"(pka|pKa)": "\mathrm{p}K_\mathrm{a}",
+			"(ph|pH|PH|Ph)": "\mathrm{pH}",
 		};
+
+		for (var key in map)
+			value = value.replace(new RegExp(key, "g"), map[key]);
+
+		return value;
 	}
 
 	function createLinkToTimeline(id) {
@@ -145,9 +153,15 @@
 		btn.type = "button";
 		btn.value = "homework";
 		btn.className = "homework";
-		document.body.appendChild(btn);
-		var name = document.querySelector(".owner .user-details a").innerHTML,
-			snip = "Hi " + name + ", welcome to Chem.SE! We require you to show your efforts on this problem. What formulae/steps did you try? Where did you get stuck? Please add this to your question. Thanks!";
+
+		try {
+			var name = document.querySelector(".owner .user-details a").innerHTML,
+				snip = "Hi " + name + ", welcome to Chem.SE! We require you to show your efforts on this problem. What formulae/steps did you try? Where did you get stuck? Please add this to your question. Thanks!";
+			document.body.appendChild(btn);
+		} catch (e) {
+			// we were on a non-question page, no need to insert the button in this case
+			return;
+		}
 
 		btn.onclick = function () {
 			var textareas = document.querySelectorAll(".js-comment-text-input");
@@ -163,9 +177,15 @@
 		btn.type = "button";
 		btn.value = "welcome";
 		btn.className = "welcome";
-		document.body.appendChild(btn);
-		var name = document.querySelector(".owner .user-details a").innerHTML,
-			snip = "Hi " + name + ", welcome to Chem.SE! Take the [tour](https://chemistry.stackexchange.com/tour) to get familiar with our site. Regular text can be formatted with [Markdown](https://chemistry.stackexchange.com/help/formatting), and mathematical expressions and chemical equations can be formatted using [Latex](http://meta.chemistry.stackexchange.com/questions/86/how-can-i-format-math-chemistry-expressions-here) syntax. If you receive useful answers, consider [accepting](http://chemistry.stackexchange.com/help/someone-answers) one! Thanks!";
+
+		try {
+			var name = document.querySelector(".owner .user-details a").innerHTML,
+				snip = "Hi " + name + ", welcome to Chem.SE! Take the [tour](https://chemistry.stackexchange.com/tour) to get familiar with our site. Regular text can be formatted with [Markdown](https://chemistry.stackexchange.com/help/formatting), and mathematical expressions and chemical equations can be formatted using [Latex](http://meta.chemistry.stackexchange.com/questions/86/how-can-i-format-math-chemistry-expressions-here) syntax. If you receive useful answers, consider [accepting](http://chemistry.stackexchange.com/help/someone-answers) one! Thanks!";
+			document.body.appendChild(btn);
+		} catch (e) {
+			// we were on a non-question page, no need to insert the button in this case
+			return;
+		}
 
 		btn.onclick = function () {
 			var textareas = document.querySelectorAll(".js-comment-text-input");
@@ -176,13 +196,55 @@
 		};
 	}
 
+	function insertAccentButton() {
+		var btn = document.createElement("input");
+		btn.type = "button";
+		btn.value = "fix accents";
+		btn.className = "accent";
+		document.body.appendChild(btn);
+
+		btn.onclick = function () {
+			var textareas = document.querySelectorAll("textarea, #title");
+			for (var i = 0, len = textareas.length; i < len; i++) {
+				textarea = textareas[i];
+				textarea.value = fixAccents(textarea.value);
+			}
+			var editSummary = document.querySelectorAll("input[name='edit-comment']");
+			for (var i = 0, l = editSummary.length; i < l; i++) {
+				editSummary[i].value += "fixed accented characters; ";
+			}
+		};
+	}
+
+	// fixes very common mathjax typos
+	function insertMathjaxButton() {
+		var btn = document.createElement("input");
+		btn.type = "button";
+		btn.value = "fix common mathjax errors";
+		btn.className = "mathjax";
+		document.body.appendChild(btn);
+
+		btn.onclick = function () {
+			var textareas = document.querySelectorAll("textarea, #title");
+			for (var i = 0, len = textareas.length; i < len; i++) {
+				textarea = textareas[i];
+				textarea.value = fixMathjax(textarea.value);
+			}
+			var editSummary = document.querySelectorAll("input[name='edit-comment']");
+			for (var i = 0, l = editSummary.length; i < l; i++) {
+				editSummary[i].value += "fixed mathjax errors, see meta.chem.se/posts/444, mhchem.github.io/MathJax-mhchem/; ";
+			}
+		};
+	}
+
 	function attachHandlers() {
 		$("body").onkeydown = handleKeyDown;
 		insertButtonApos();
-		insertBronstedButton();
 		insertTimelineButton();
 		insertHomeworkButton();
 		insertWelcomeButton();
+		insertAccentButton();
+		insertMathjaxButton();
 	}
 
 	window.onload = function () {
