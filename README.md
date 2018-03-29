@@ -22,3 +22,4 @@ Update: 24/Mar/2018: All of the features have now been implemented, and this unp
 
 1. fix the repetitive code for welcome and homework button insertion
 2. keep beta testing, and release in webstore in mid-June
+3. allow export and import of these mathjax settings; also create lists for popular communities, as different sites favour different mathjax versions. (see them [here](https://stackapps.com/questions/3373/mathjax-buttons))
