@@ -16,10 +16,11 @@ Update: 24/Mar/2018: All of the features have now been implemented (still extrem
 
 **Features:**
 
-1. The keybinding and its associated insertion text can be modified by the user.
+1. The keybinding and its associated insertion text can be modified by the user. That is, you can set it to insert `\pi` on Alt+Shift+A instead.
 
 **TODO:**
 
 1. fix the repetitive code for welcome and homework button insertion
 2. keep beta testing, and release in webstore in mid-June
 3. allow export and import of these mathjax settings; also create lists for popular communities, as different sites favour different mathjax versions. (see them [here](https://stackapps.com/questions/3373/mathjax-buttons))
+4. make a meta post on chem.se about this.
