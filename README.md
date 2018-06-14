@@ -1,26 +1,46 @@
-# ChemMarkdownForChemSE
+# Markdown Shortcuts for StackExchange
 *insert latex commands more quickly by keybindings*
 
-Many users will simply not adopt mathjax/chem as a part of their posts even after a month of using Chem.SE. They leave this task upto more reputed users. But even those users can quickly get bored of this mundane work of formatting these posts (unless they are, well, the tireless moderators, who have edited >2k posts!)
+This simple userscript aims to give users some quick key bindings to speed up the process of editing mathjax/chem/etc. into posts.
 
-So, this simple Chrome/Opera/Firefox extension aims to give these superusers some quick key bindings to speed up the process of editing chem/mathjax into posts.
-
-Update: 24/Mar/2018: All of the features have now been implemented (still extremely buggy), and this unpacked extension is currently provided as is. Standard MIT License applies.
-
-**Example usage**:
+**Example usage**: (the hotkeys are customizable!)
 
 1. Pressing Alt+Shift+P would insert `\pi` directly.
-2. Pressing Alt+Shift+R would insert `\mathrm{%caret%}` with the caret auto-placed in the middle.
-3. Pressing Alt+Shift+R with some `text` pre-selected would insert `\mathrm{text}`.
-4. Prepending Ctrl to any of the above keybindings will auto-surround the insertion text with `$$`
+2. Pressing Alt+R would insert `\mathrm{%caret%}` with the caret auto-placed in the middle.
+3. Pressing Alt+R with some `text` pre-selected would insert `\mathrm{text}`.
+4. Prepending Ctrl to any of the above keybindings will auto-surround the insertion text with `$$` (or `\$` on some other SE sites)
 
-**Features:**
+The keybinding and its associated insertion text can be modified by the user. So, you can set it to insert `\pi` on Alt+A instead.
 
-1. The keybinding and its associated insertion text can be modified by the user. That is, you can set it to insert `\pi` on Alt+Shift+A instead.
+Moreover, Alt-Z is reserved for dollar-ifying (`text` => `$text$`) and Alt-C is reserved for double dollar-ifying (`text` => `$$text$$`)
 
-**TODO:**
+----
 
-1. fix the repetitive code for welcome and homework button insertion
-2. keep beta testing, and release in webstore in mid-June
-3. allow export and import of these mathjax settings; also create lists for popular communities, as different sites favour different mathjax versions. (see them [here](https://stackapps.com/questions/3373/mathjax-buttons))
-4. make a meta post on chem.se about this.
+### **How to customize hotkeys?**
+
+(Note that Alt-Z and Alt-C are reserved)
+
+Each hotkey is composed of three parts:
+
+- modifier: either an "altKey" or a "shiftKey+altKey" combo
+- keycode: the key to be pressed alongwith the modifier. You can get the numerical keycode from keycode.info
+- LaTeX command: to be inserted on pressing modifier+key. These are of two types:
+  - braced: like `\mathrm{}`
+  - non-braced: like `\pi`.
+  
+To **customize hotkeys**, head over to line 44 where `var data = ` is initialized. By default, it is set as:
+
+    var data = [
+			["shiftKey", "altKey", 80, "pi"],
+			["shiftKey", "altKey", 82, "mathrm{}"]
+		]
+    
+So, if you want to insert `Huge{}` on Alt-H, just add this line:
+
+    var data = [
+			["shiftKey", "altKey", 80, "pi"],
+			["shiftKey", "altKey", 82, "mathrm{}"],
+      ["altKey", 72, "pu{}"]
+		]
+    
+(The keycode for H is 72 (as seen on keycode.info))
