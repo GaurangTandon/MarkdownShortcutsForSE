@@ -29,11 +29,11 @@
     // to understand how these keycodes work, head over to
     // https://github.com/GaurangTandon/MarkdownShortcutsForSE
 	var DATA = [
-		    ["shiftKey", "altKey", 73, "pi"], // I
-		    ["shiftKey", "altKey", 82, "mathrm{}"], // R
-                    ["shiftKey", "altKey", 69, "ce{}"], // E
-                    ["shiftKey", "altKey", 80, "pu{}"], // P
-       ],
+		    ["shiftKey", "altKey", 80, "pi"],
+		    ["shiftKey", "altKey", 82, "mathrm{}"],
+            ["shiftKey", "altKey", 67, "ce{}"],
+            ["shiftKey", "altKey", 80, "pu{}"],
+	    ],
         DOLLARIFY_KEYCODE = 90,
         DOUBLE_DOLLARIFY_KEYCODE = 67,
         FRACIFY_KEYCODE = 65,
@@ -46,22 +46,6 @@
         ismhchemSite = mhchemSites.test(URL),
         singleMJDelimiter = (isSlashedMJDelimiterSite ? "\\" : "") + "$",
         doubleMJDelimiter = "$$";
-
-    function $(selector) {
-		var elms = document.querySelectorAll(selector), elm;
-
-		// cannot always return a NodeList/Array
-		// as properties like firstChild, lastChild will only be able
-		// to be accessed by elms[0].lastChild which is too cumbersome
-		if (elms.length === 1) {
-			elm = elms[0];
-			// so that I can access the length of the returned
-			// value else length if undefined
-			elm.length = 1;
-			return elm;
-		}
-		else return elms;
-	};
 
 	function isBracedCommand(command) {
 		return command.endsWith("{}");
@@ -84,14 +68,14 @@
         */
 
         var selS = textarea.selectionStart,
-            selE = textarea.selectionEn,
+            selE = textarea.selectionEnd,
             value = textarea.value,
             valBefore = value.substring(0, selS),
             valMid = value.substring(selS, selE),
             valAfter = value.substring(selE),
             generatedWrapper,
             // handle trailing spaces
-            trimmedSelection = valMid.match (/^(\s*)(\S?(?:.|\n|\r)*\S)(\s*)$/) || ["", "", "", ""];
+            trimmedSelection = valMid.match(/^(\s*)(\S?(?:.|\n|\r)*\S)(\s*)$/) || ["", "", "", ""];
 
         // determine if text is currently wrapped
         if(valBefore.endsWith(start) && valAfter.startsWith(end)){
@@ -311,5 +295,5 @@
         if (matchedCommand)	insertLatexCommand.call(node, matchedCommand, event.ctrlKey);
     }
 
-	document.body.onkeydown = handleKeyDown;
+	document.body.addEventListener("keydown", handleKeyDown);
 })();
