@@ -42,6 +42,6 @@ So, if you want to insert `Huge{}` on Alt-H, just add this line:
     
 (The keycode for H is 72 (as seen on keycode.info))
 
-To **customize reserved hotkeys**, just change the keycode entry for the corresponding variables just below `DATA`: `DOLLARIFY_KEYCODE`, `DOUBLE_DOLLARIFY_KEYCODE`, `FRAC_KEYCODE`.
+To **customize reserved hotkeys**, just change the keycode entry for the corresponding variables just below `DATA`: `DOLLARIFY_KEYCODE`, `DOUBLE_DOLLARIFY_KEYCODE`, `FRACIFY_KEYCODE`.
 
 **Note**: some Alt+key combos might be system-reserved (check [this list](https://en.wikipedia.org/wiki/Table_of_keyboard_shortcuts)), so you may need to prepend Shift to get them to work.
