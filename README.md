@@ -18,8 +18,6 @@ Moreover, Alt-Z is reserved for dollar-ifying (`text` => `$text$`) and Alt-C is 
 
 ### **How to customize hotkeys?**
 
-(Note that Alt-Z and Alt-C are reserved)
-
 Each hotkey is composed of three parts:
 
 - modifier: either an "altKey" or a "shiftKey+altKey" combo
@@ -44,3 +42,5 @@ So, if you want to insert `Huge{}` on Alt-H, just add this line:
     ]
     
 (The keycode for H is 72 (as seen on keycode.info))
+
+**Note:** Alt-Z and Alt-C are reserved for dollarifying, while some other Alt+key combos might be system-reserved (check [this list](https://en.wikipedia.org/wiki/Table_of_keyboard_shortcuts)))
