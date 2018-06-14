@@ -1,7 +1,6 @@
 # Markdown Shortcuts for StackExchange
-*insert latex commands more quickly by keybindings*
 
-This simple userscript aims to give users some quick key bindings to speed up the process of editing mathjax/chem/etc. into posts.
+This  userscript gives users some quick key bindings to speed up the process of editing mathjax/chem/etc. into posts.
 
 **Example usage**: (the hotkeys are customizable!)
 
@@ -50,6 +49,6 @@ So, if you want to insert `Huge{}` on Alt-H, just add this line:
     
 (The keycode for H is 72 (as seen on keycode.info))
 
-To **customize reserved hotkeys**, just change the keycode entry for the corresponding variables just below `DATA`: `DOLLARIFY_KEYCODE`, `DOUBLE_DOLLARIFY_KEYCODE`, `FRACIFY_KEYCODE`.
+To **customize reserved hotkeys**, just change the keycode entry for the corresponding variables just below `DATA`: `DOLLARIFY_KEYCODE`, `DOUBLE_DOLLARIFY_KEYCODE`, `FRACIFY_KEYCODE`. To disable any of them, set its value `= -1`.
 
 **Note**: some Alt+key combos might be system-reserved (check [this list](https://en.wikipedia.org/wiki/Table_of_keyboard_shortcuts)), so you may need to prepend Shift to get them to work.
