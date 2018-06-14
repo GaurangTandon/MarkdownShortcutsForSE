@@ -11,7 +11,15 @@ This simple userscript aims to give users some quick key bindings to speed up th
 4. Prepending Ctrl to any of the above keybindings will auto-surround the insertion text with `$$` (or `\$` on some other SE sites)
 5. The keybinding and its associated insertion text can be modified by the user. So, you can set it to insert `\pi` on Alt+A instead.
 
-Moreover, there are certain reserved keycodes like: Alt-Z => dollar-ifying (`text` => `$text$`), Alt-C => double dollar-ifying (`text` => `$$text$$`), Alt-A => frac-ify (`A/B` => `\frac{A}{B}`). You can still change their keycode or entirely disable them as well.
+Moreover, there are certain reserved keycodes like: 
+
+- Alt-Z => dollar-ifying (`text` => `$text$`)
+- Alt-C => double dollar-ifying (`text` => `$$text$$`)
+- Alt-A => frac-ify (`A/B` => `\frac{A}{B}`)
+- Alt-S => align-ify ([image demo](https://i.stack.imgur.com/RmWFQ.png))
+- Diracify (TODO)
+
+You can still change their keycode or entirely disable them as well, the given Z/C/A/etc. keycombos are just the default values.
 
 ----
 
