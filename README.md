@@ -5,9 +5,9 @@ This simple userscript aims to give users some quick key bindings to speed up th
 
 **Example usage**: (the hotkeys are customizable!)
 
-1. Pressing Alt+Shift+P would insert `\pi` directly.
-2. Pressing Alt+R would insert `\mathrm{%caret%}` with the caret auto-placed in the middle.
-3. Pressing Alt+R with some `text` pre-selected would insert `\mathrm{text}`.
+1. Pressing Alt+Shift+P would insert `\pi][` directly. (`]text[` denotes selection, `][` denotes caret position)
+2. Pressing Alt+R would insert `\mathrm{][}` with the caret auto-placed in the middle.
+3. Pressing Alt+R with some `text` pre-selected would insert `\mathrm{]text[}`.
 4. Prepending Ctrl to any of the above keybindings will auto-surround the insertion text with `$$` (or `\$` on some other SE sites)
 
 The keybinding and its associated insertion text can be modified by the user. So, you can set it to insert `\pi` on Alt+A instead.
