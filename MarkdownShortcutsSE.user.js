@@ -29,11 +29,11 @@
     // to understand how these keycodes work, head over to
     // https://github.com/GaurangTandon/MarkdownShortcutsForSE
 	var DATA = [
-		    ["shiftKey", "altKey", 80, "pi"],
-		    ["shiftKey", "altKey", 82, "mathrm{}"],
-            ["shiftKey", "altKey", 67, "ce{}"],
-            ["shiftKey", "altKey", 80, "pu{}"],
-	    ],
+		    ["shiftKey", "altKey", 73, "pi"], // I
+		    ["shiftKey", "altKey", 82, "mathrm{}"], // R
+                    ["shiftKey", "altKey", 69, "ce{}"], // E
+                    ["shiftKey", "altKey", 80, "pu{}"], // P
+       ],
         DOLLARIFY_KEYCODE = 90,
         DOUBLE_DOLLARIFY_KEYCODE = 67,
         FRACIFY_KEYCODE = 65,
