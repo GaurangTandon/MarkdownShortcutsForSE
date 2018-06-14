@@ -31,16 +31,16 @@ Each hotkey is composed of three parts:
 To **customize hotkeys**, head over to line 44 where `var data = ` is initialized. By default, it is set as:
 
     var data = [
-			["shiftKey", "altKey", 80, "pi"],
-			["shiftKey", "altKey", 82, "mathrm{}"]
-		]
+        ["shiftKey", "altKey", 80, "pi"],
+        ["shiftKey", "altKey", 82, "mathrm{}"]
+    ]
     
 So, if you want to insert `Huge{}` on Alt-H, just add this line:
 
     var data = [
-			["shiftKey", "altKey", 80, "pi"],
-			["shiftKey", "altKey", 82, "mathrm{}"],
-      ["altKey", 72, "pu{}"]
-		]
+        ["shiftKey", "altKey", 80, "pi"],
+        ["shiftKey", "altKey", 82, "mathrm{}"],
+        ["altKey", 72, "Huge{}"]
+    ]
     
 (The keycode for H is 72 (as seen on keycode.info))
