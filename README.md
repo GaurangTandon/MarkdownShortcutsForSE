@@ -9,10 +9,9 @@ This simple userscript aims to give users some quick key bindings to speed up th
 2. Pressing Alt+R would insert `\mathrm{}` with the caret auto-placed in the middle. Pressing Alt-R again would _unwrap_ the `\mathrm{}` back.
 3. Pressing Alt+R with some `text` pre-selected would insert `\mathrm{text}`, retaining the selection on the text. Pressing Alt-R again would _unwrap_ the `\mathrm{text}` back to `text`, retaining the selection on text.
 4. Prepending Ctrl to any of the above keybindings will auto-surround the insertion text with `$$` (or `\$` on some other SE sites)
+5. The keybinding and its associated insertion text can be modified by the user. So, you can set it to insert `\pi` on Alt+A instead.
 
-The keybinding and its associated insertion text can be modified by the user. So, you can set it to insert `\pi` on Alt+A instead.
-
-Moreover, Alt-Z is reserved for dollar-ifying (`text` => `$text$`) and Alt-C is reserved for double dollar-ifying (`text` => `$$text$$`)
+Moreover, there are certain reserved keycodes like: Alt-Z => dollar-ifying (`text` => `$text$`), Alt-C => double dollar-ifying (`text` => `$$text$$`), Alt-A => frac-ify (`A/B` => `\frac{A}{B}`). You can still change their keycode or entirely disable them as well.
 
 ----
 
@@ -43,4 +42,6 @@ So, if you want to insert `Huge{}` on Alt-H, just add this line:
     
 (The keycode for H is 72 (as seen on keycode.info))
 
-**Note:** Alt-Z and Alt-C are reserved for dollarifying, while some other Alt+key combos might be system-reserved (check [this list](https://en.wikipedia.org/wiki/Table_of_keyboard_shortcuts)))
+To **customize reserved hotkeys**, just change the keycode entry for the corresponding variables just below `DATA`: `DOLLARIFY_KEYCODE`, `DOUBLE_DOLLARIFY_KEYCODE`, `FRAC_KEYCODE`.
+
+**Note**: some Alt+key combos might be system-reserved (check [this list](https://en.wikipedia.org/wiki/Table_of_keyboard_shortcuts)), so you may need to prepend Shift to get them to work.
