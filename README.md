@@ -51,4 +51,6 @@ So, if you want to insert `Huge{}` on Alt-H, just add this line:
 
 To **customize reserved hotkeys**, just change the keycode entry for the corresponding variables just below `DATA`: `DOLLARIFY_KEYCODE`, `DOUBLE_DOLLARIFY_KEYCODE`, `FRACIFY_KEYCODE`. To disable any of them, set its value `= -1`.
 
+To **position the caret at a specified position**, use the pipe (`|`) character. Usual wrapping rules would apply. In the absence of the pipe character, the caret is inserted inside the last `{}`/`()`pair, or at the end of the string.
+
 **Note**: some Alt+key combos might be system-reserved (check [this list](https://en.wikipedia.org/wiki/Table_of_keyboard_shortcuts)), so you may need to prepend Shift to get them to work.
