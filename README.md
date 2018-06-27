@@ -16,7 +16,6 @@ Moreover, there are certain reserved keycodes like:
 - Alt-C => double dollar-ifying (`text` => `$$text$$`)
 - Alt-A => frac-ify (`A/B` => `\frac{A}{B}`)
 - Alt-S => align-ify ([image demo](https://i.stack.imgur.com/RmWFQ.png))
-- Diracify (TODO)
 
 You can still change their keycode or entirely disable them as well, the given Z/C/A/etc. keycombos are just the default values.
 
@@ -32,25 +31,25 @@ Each hotkey is composed of three parts:
   - braced: like `\mathrm{}`
   - non-braced: like `\pi`.
   
-To **customize hotkeys**, head over to line 44 where `var data = ` is initialized. By default, it is set as:
+To **customize hotkeys**, head over to line 38 where `SHORTCUTS = ` is initialized. By default, it is set as (note it is important to escape the `\`, so we write `\\`): 
 
-    var data = [
-        ["shiftKey", "altKey", 80, "pi"],
-        ["shiftKey", "altKey", 82, "mathrm{}"]
+    SHORTCUTS = [
+        ["shiftKey", "altKey", 80, "\\pi"],
+        ["shiftKey", "altKey", 82, "\\mathrm{}"]
     ]
     
-So, if you want to insert `Huge{}` on Alt-H, just add this line:
+So, if you want to insert `\Huge{}` on Alt-H, just add a single line:
 
-    var data = [
-        ["shiftKey", "altKey", 80, "pi"],
-        ["shiftKey", "altKey", 82, "mathrm{}"],
-        ["altKey", 72, "Huge{}"]
+    SHORTCUTS = [
+        ["shiftKey", "altKey", 80, "\\pi"],
+        ["shiftKey", "altKey", 82, "\\mathrm{}"],
+        ["altKey", 72, "\\Huge{}"]
     ]
     
 (The keycode for H is 72 (as seen on keycode.info))
 
-To **customize reserved hotkeys**, just change the keycode entry for the corresponding variables just below `DATA`: `DOLLARIFY_KEYCODE`, `DOUBLE_DOLLARIFY_KEYCODE`, `FRACIFY_KEYCODE`. To disable any of them, set its value `= -1`.
+To **customize reserved hotkeys** (for frac-ify, align lines, etc.), head over to the declaration for `SPECIAL_SHORTCUTS`. To disable any of them, delete the corresponding row.
 
-To **position the caret at a specified position**, use the pipe (`|`) character. Usual wrapping rules would apply. In the absence of the pipe character, the caret is inserted inside the last `{}`/`()`pair, or at the end of the string.
+To **position the caret at a specific position**, use the pipe (`|`) character. Usual wrapping rules apply. In the absence of the pipe character, the caret is inserted inside the last `{}`/`()`pair, or at the end of the string.
 
 **Note**: some Alt+key combos might be system-reserved (check [this list](https://en.wikipedia.org/wiki/Table_of_keyboard_shortcuts)), so you may need to prepend Shift to get them to work.
