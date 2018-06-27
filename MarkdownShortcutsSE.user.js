@@ -28,28 +28,29 @@
 
     // to understand how these keycodes work, head over to
     // https://github.com/GaurangTandon/MarkdownShortcutsForSE
-	var DATA = [
-		    ["shiftKey", "altKey", 73, "pi"],      // I
-		    ["shiftKey", "altKey", 82, "mathrm{}"],// R
-                    ["shiftKey", "altKey", 69, "ce{}"],    // E
-                    ["shiftKey", "altKey", 80, "pu{}"],    // P
-	    ],
-        DOLLARIFY_KEYCODE = 90,
-        DOUBLE_DOLLARIFY_KEYCODE = 67,
-        FRACIFY_KEYCODE = 65,
-        ALIGN_KEYCODE = 83,
-        BIGO_KEYCODE = 81,
-        URL = window.location.href,
+    var URL = window.location.href,
         slashedMJDelimiterSites = /(electronics|codereview)\.stackexchange/,
         isSlashedMJDelimiterSite = slashedMJDelimiterSites.test(URL),
-        mhchemSites = /(chemistry|biology)\.stackexchange/,
-        ismhchemSite = mhchemSites.test(URL),
         singleMJDelimiter = (isSlashedMJDelimiterSite ? "\\" : "") + "$",
-        doubleMJDelimiter = "$$";
-
-	function isBracedCommand(command) {
-		return command.endsWith("{}");
-	}
+        doubleMJDelimiter = "$$",
+        singleDollarInsert = singleMJDelimiter + "|" + singleMJDelimiter,
+        doubleDollarInsert = doubleMJDelimiter + "|" + doubleMJDelimiter,
+        SHORTCUTS = [
+            ["altKey", 90, singleDollarInsert],         // Z
+            ["altKey", 67, doubleDollarInsert],         // C
+	        ["shiftKey", "altKey", 73, "\\pi"],         // I
+		    ["shiftKey", "altKey", 82, "\\mathrm{}"],   // R
+            ["shiftKey", "altKey", 69, "\\ce{}"],       // E
+            ["shiftKey", "altKey", 87, "\\pu{}"],       // W
+	    ],
+        SPECIAL_SHORTCUTS = {
+            // keycode: function to execute on the selected text (see
+            // (it is the "helper" in function handleTextConversion)
+            65: fraciify,
+            83: alignLines
+        },
+        mhchemSites = /(chemistry|biology)\.stackexchange/,
+        ismhchemSite = mhchemSites.test(URL);
 
     function wrap(textarea, start, end){
         // same wrapper code on either side (`$...$`)
@@ -73,15 +74,17 @@
             valBefore = value.substring(0, selS),
             valMid = value.substring(selS, selE),
             valAfter = value.substring(selE),
+            startLen = start.length,
+            endLen = end.length,
             generatedWrapper,
             // handle trailing spaces
             trimmedSelection = valMid.match(/^(\s*)(\S?(?:.|\n|\r)*\S)(\s*)$/) || ["", "", "", ""];
 
         // determine if text is currently wrapped
         if(valBefore.endsWith(start) && valAfter.startsWith(end)){
-            textarea.value = valBefore.substring(0, valBefore.length - start.length) + valMid + valAfter.substring(end.length);
-            textarea.selectionStart = valBefore.length - start.length;
-            textarea.selectionEnd = (valBefore + valMid).length - end.length;
+            textarea.value = valBefore.substring(0, valBefore.length - startLen) + valMid + valAfter.substring(endLen);
+            textarea.selectionStart = valBefore.length - startLen;
+            textarea.selectionEnd = (valBefore + valMid).length - startLen;
             textarea.focus();
         }else{
             valBefore += trimmedSelection[1];
@@ -99,29 +102,31 @@
         StackExchange.MarkdownEditor.refreshAllPreviews();
     }
 
-	function insertLatexCommand(command, isCtrlKeyDown) {
-        command = "\\" + command;
+    // returns [begin, end]
+    function splitLatexCommand(command){
+        var pipe = command.indexOf("|"), idx;
 
-		var selS = this.selectionStart, selE = this.selectionEnd,
-			value = this.value,
-			valBefore = value.substring(0, selS),
-			valAfter = value.substring(selE),
-			isCommandBraced = isBracedCommand(command),
-            commandLen = command.length,
-            lastIndex = commandLen - 1,
-            begin = command.substring(0, lastIndex),
-            end = command.charAt(lastIndex);
+        if(pipe != -1) return command.split("|");
+        else {
+            idx = command.lastIndexOf("{}");
+            if(idx == -1) idx = command.lastIndexOf("()");
+
+            if(idx == -1) return [command, ""];
+            return [command.substring(0, idx + 1), command.substring(idx + 1)];
+        }
+    }
+
+	function insertLatexCommand(node, command, isCtrlKeyDown) {
+		var splittedCommand = splitLatexCommand(command),
+            begin = splittedCommand[0],
+            end = splittedCommand[1];
 
         if(isCtrlKeyDown) {
             begin = singleMJDelimiter + begin;
             end += singleMJDelimiter;
         }
 
-        // irrespective of whether there was a text-selection or not
-        if(!isCommandBraced){
-            this.value = valBefore + command + valAfter;
-            this.selectionStart = this.selectionEnd = selS + commandLen;
-        }else wrap(this, begin, end);
+        wrap(node, begin, end);
 	}
 
     function handleTextConversion(node, helper, isCtrlKeyDown){
@@ -245,38 +250,18 @@
     function handleKeyDown(event) {
         var node = event.target, keyCode = event.keyCode,
             command, commandLength, allModifiersPressed,
-            matchedCommand = null,
-            isCtrlKeyDown = event.ctrlKey,
-            beginText = "\\mathcal{O}(", endText = ")";
+            matchedFunction = null, matchedCommand = null,
+            isCtrlKeyDown = event.ctrlKey;
 
-        if (node.tagName !== "TEXTAREA") return true;
+        if(node.tagName !== "TEXTAREA") return true;
 
         if(event.altKey && !event.shiftKey){
-            switch(keyCode){
-                case DOLLARIFY_KEYCODE:
-                    wrap(node, singleMJDelimiter);
-                    break;
-                case DOUBLE_DOLLARIFY_KEYCODE:
-                    wrap(node, doubleMJDelimiter);
-                    break;
-                case FRACIFY_KEYCODE:
-                    handleTextConversion(node, fraciify, isCtrlKeyDown);
-                    break;
-                case ALIGN_KEYCODE:
-                    handleTextConversion(node, alignLines);
-                    break;
-                case BIGO_KEYCODE:
-                    if(isCtrlKeyDown) {
-                        beginText = singleMJDelimiter + beginText;
-                        endText += singleMJDelimiter;
-                    }
-                    wrap(node, beginText, endText);
-                    break;
-            }
+            matchedFunction = SPECIAL_SHORTCUTS[keyCode];
+            if(matchedFunction) {handleTextConversion(node, matchedFunction, isCtrlKeyDown); return;}
         }
 
-        for (var i = 0, len = DATA.length; i < len; i++) {
-            command = DATA[i]; commandLength = command.length;
+        for (var i = 0, len = SHORTCUTS.length; i < len; i++) {
+            command = SHORTCUTS[i]; commandLength = command.length;
 
             allModifiersPressed = true;
 
@@ -292,7 +277,7 @@
             }
         }
 
-        if (matchedCommand)	insertLatexCommand.call(node, matchedCommand, event.ctrlKey);
+        if (matchedCommand)	insertLatexCommand(node, matchedCommand, isCtrlKeyDown);
     }
 
 	document.body.addEventListener("keydown", handleKeyDown);
