@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Markdown Shortcuts for StackExchange
-// @version      0.1
+// @version      1.0.0
 // @description  easily insert common (cuztomizable) LaTeX shortcuts
 // @author       Gaurang Tandon
 // @match        *://*.askubuntu.com/*
@@ -20,7 +20,6 @@
 // @exclude      *://openid.stackexchange.com/*
 // @exclude      *://stackexchange.com/*
 // @grant        none
-// @history      0.1 - 9th June 2018 - Hello world!
 // ==/UserScript==
 
 (function() {
@@ -35,26 +34,27 @@
         doubleMJDelimiter = "$$",
         singleDollarInsert = singleMJDelimiter + "|" + singleMJDelimiter,
         doubleDollarInsert = doubleMJDelimiter + "|" + doubleMJDelimiter,
-        SHORTCUTS = [
-            ["altKey", 90, singleDollarInsert],         // Z
-            ["altKey", 67, doubleDollarInsert],         // C
-	        ["shiftKey", "altKey", 73, "\\pi"],         // I
-		    ["shiftKey", "altKey", 82, "\\mathrm{}"],   // R
-            ["shiftKey", "altKey", 69, "\\ce{}"],       // E
-            ["shiftKey", "altKey", 87, "\\pu{}"],       // W
+        SHORTCUTS = [            
+	        ["altKey", "I", "\\pi"],
+		    ["altKey", "R", "\\mathrm{}"],
+            ["altKey", "E", "\\ce{}"],
+            ["altKey", "P", "\\pu{}"],
+            ["altKey", "T", "\\text{}"],
+            ["altKey", "Z", singleDollarInsert],
+            ["altKey", "C", doubleDollarInsert]
 	    ],
         SPECIAL_SHORTCUTS = {
             // keycode: function to execute on the selected text (see
             // (it is the "helper" in function handleTextConversion)
-            65: fraciify,
-            83: alignLines
+            "A": fraciify,
+            "S": alignLines
         },
         mhchemSites = /(chemistry|biology)\.stackexchange/,
         ismhchemSite = mhchemSites.test(URL);
 
     function wrap(textarea, start, end){
         // same wrapper code on either side (`$...$`)
-        if(!end) end = start;
+        if(typeof end === "undefined") end = start;
 
         /*--- Expected behavior:
             When there is some text selected: (unwrap it if already wrapped)
@@ -249,15 +249,20 @@
 
     function handleKeyDown(event) {
         var node = event.target, keyCode = event.keyCode,
+            charPressed = String.fromCharCode(keyCode).toUpperCase(),
             command, commandLength, allModifiersPressed,
             matchedFunction = null, matchedCommand = null,
-            isCtrlKeyDown = event.ctrlKey;
+            isCtrlKeyDown = event.ctrlKey || event.metaKey;
 
         if(node.tagName !== "TEXTAREA") return true;
 
         if(event.altKey && !event.shiftKey){
-            matchedFunction = SPECIAL_SHORTCUTS[keyCode];
-            if(matchedFunction) {handleTextConversion(node, matchedFunction, isCtrlKeyDown); return;}
+            matchedFunction = SPECIAL_SHORTCUTS[charPressed];
+            if(matchedFunction) {
+                event.preventDefault();
+                handleTextConversion(node, matchedFunction, isCtrlKeyDown);
+                return;
+            }
         }
 
         for (var i = 0, len = SHORTCUTS.length; i < len; i++) {
@@ -265,7 +270,7 @@
 
             allModifiersPressed = true;
 
-            if (command[commandLength - 2] === keyCode) {
+            if (command[commandLength - 2] === charPressed) {
                 for (var j = 0; j < commandLength - 2; j++) {
                     if (!event[command[j]])	allModifiersPressed = false;
                 }
@@ -277,7 +282,10 @@
             }
         }
 
-        if (matchedCommand)	insertLatexCommand(node, matchedCommand, isCtrlKeyDown);
+        if (matchedCommand)	{
+            event.preventDefault();
+            insertLatexCommand(node, matchedCommand, isCtrlKeyDown);
+        }
     }
 
 	document.body.addEventListener("keydown", handleKeyDown);
