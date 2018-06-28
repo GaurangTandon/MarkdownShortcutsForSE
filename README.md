@@ -26,7 +26,7 @@ You can still change their keycode or entirely disable them as well, the given Z
 Each hotkey is composed of three parts:
 
 - modifier: either an "altKey" or a "shiftKey+altKey" combo
-- keycode: the key to be pressed alongwith the modifier. You can get the numerical keycode from keycode.info
+- key: the key to press, please keep it uppercase.
 - LaTeX command: to be inserted on pressing modifier+key. These are of two types:
   - braced: like `\mathrm{}`
   - non-braced: like `\pi`.
@@ -34,22 +34,20 @@ Each hotkey is composed of three parts:
 To **customize hotkeys**, head over to line 38 where `SHORTCUTS = ` is initialized. By default, it is set as (note it is important to escape the `\`, so we write `\\`): 
 
     SHORTCUTS = [
-        ["shiftKey", "altKey", 80, "\\pi"],
-        ["shiftKey", "altKey", 82, "\\mathrm{}"]
+        ["altKey", "I", "\\pi"],
+		["altKey", "R", "\\mathrm{}"],
     ]
     
 So, if you want to insert `\Huge{}` on Alt-H, just add a single line:
 
     SHORTCUTS = [
-        ["shiftKey", "altKey", 80, "\\pi"],
-        ["shiftKey", "altKey", 82, "\\mathrm{}"],
-        ["altKey", 72, "\\Huge{}"]
+        ["altKey", "I", "\\pi"],
+		["altKey", "R", "\\mathrm{}"],
+        ["altKey", "H", "\\Huge{}"]
     ]
-    
-(The keycode for H is 72 (as seen on keycode.info))
 
 To **customize reserved hotkeys** (for frac-ify, align lines, etc.), head over to the declaration for `SPECIAL_SHORTCUTS`. To disable any of them, delete the corresponding row.
 
 To **position the caret at a specific position**, use the pipe (`|`) character. Usual wrapping rules apply. In the absence of the pipe character, the caret is inserted inside the last `{}`/`()`pair, or at the end of the string.
 
-**Note**: some Alt+key combos might be system-reserved (check [this list](https://en.wikipedia.org/wiki/Table_of_keyboard_shortcuts)), so you may need to prepend Shift to get them to work.
+**Note**: some Alt+key combos might be system-reserved (check [this list](https://en.wikipedia.org/wiki/Table_of_keyboard_shortcuts)), so you may need to prepend Shift to avoid overriding system-reserved behavior.
