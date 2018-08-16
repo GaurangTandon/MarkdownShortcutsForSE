@@ -38,7 +38,7 @@
 	        ["altKey", "I", "\\pi"],
 		    ["altKey", "R", "\\mathrm{}"],
             ["altKey", "E", "\\ce{}"],
-            ["altKey", "P", "\\pu{}"],
+            ["altKey", "W", "\\pu{}"],
             ["altKey", "T", "\\text{}"],
             ["altKey", "Z", singleDollarInsert],
             ["altKey", "C", doubleDollarInsert]
@@ -51,6 +51,30 @@
         },
         mhchemSites = /(chemistry|biology)\.stackexchange/,
         ismhchemSite = mhchemSites.test(URL);
+
+    function convertCESubSuperScripts(valMid){
+        return valMid.replace(/<sub>(\d+)<\/sub>/g, function($0, $1){
+            return $1;
+        }).replace(/<sub>([^\<]+)<\/sub>/g, function($0, $1){
+            return "_{" + $1 + "}";
+        }).replace(/<sup>([\+\-]?)(\d+)([\+\-]?)<\/sup>/g, function($0, $1, $2, $3){
+            return "^" + $2 + ($1 || $3);
+        }).replace(/<sup>([^\<]+)<\/sup>/g, function($0, $1){
+            return "^{" + $1 + "}";
+        });
+    }
+
+    function convertPUSubSuperScripts(valMid){
+        return valMid.replace(/<sub>(\d+)<\/sub>/g, function($0, $1){
+            return $1;
+        }).replace(/<sub>([^\<]+)<\/sub>/g, function($0, $1){
+            return "_{" + $1 + "}";
+        }).replace(/<sup>([\+\-]?)(\d+)([\+\-]?)<\/sup>/g, function($0, $1, $2, $3){
+            return "^" + ($1 || $3) + $2;
+        }).replace(/<sup>([^\<]+)<\/sup>/g, function($0, $1){
+            return "^{" + $1 + "}";
+        });
+    }
 
     function wrap(textarea, start, end){
         // same wrapper code on either side (`$...$`)
@@ -78,7 +102,8 @@
             endLen = end.length,
             generatedWrapper,
             // handle trailing spaces
-            trimmedSelection = valMid.match(/^(\s*)(\S?(?:.|\n|\r)*\S)(\s*)$/) || ["", "", "", ""];
+            trimmedSelection = valMid.match(/^(\s*)(\S?(?:.|\n|\r)*\S)(\s*)$/) || ["", "", "", ""],
+            command = start + end;
 
         // determine if text is currently wrapped
         if(valBefore.endsWith(start) && valAfter.startsWith(end)){
@@ -90,6 +115,12 @@
             valBefore += trimmedSelection[1];
             valAfter = trimmedSelection[3] + valAfter;
             valMid = trimmedSelection[2];
+
+            if(command.indexOf("\\ce{}") > -1){
+                valMid = convertCESubSuperScripts(valMid);
+            }else if(command.indexOf("\\pu{}") > -1){
+                valMid = convertPUSubSuperScripts(valMid);
+            }
 
             generatedWrapper = start + valMid + end;
 
@@ -221,7 +252,7 @@
             // removing trailing spaces/$$ first
             line = line.replace(/^[\s\$]+/, "").replace(/[\s\$]+$/, "");
             if(ismhchemSite) line = insertReactionArrowsAlignment(line);
-            else line = line.replace(/=/g, "&=");
+            else line = line.replace(/(=|<=|>=|>|<|\\geq|\\leq)/g, "&$1");
 
             line += "\\\\\n";
             output += line;
