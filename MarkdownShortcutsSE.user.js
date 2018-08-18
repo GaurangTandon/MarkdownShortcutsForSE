@@ -265,7 +265,7 @@
         // remove last two backslashes
         output = output.substring(0, output.length - 3) + "\n";
 
-        output = "\begin{align}\n" + output + "\\end{align}";
+        output = "\\begin{align}\n" + output + "\\end{align}";
         return output;
     }
 
