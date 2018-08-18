@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Markdown Shortcuts for StackExchange
-// @version      1.0.0
+// @version      1.1.0
 // @description  easily insert common (cuztomizable) LaTeX shortcuts
 // @author       Gaurang Tandon
 // @match        *://*.askubuntu.com/*
@@ -222,6 +222,10 @@
         // malformed parentheses
         return [-1, -1];
     }
+    
+    function removeTralingLeadingSpacesAndDollarSigns(string){
+        return string.replace(/^[\s\n\$]+/, "").replace(/[\s\n\$]+$/, "");
+    }
 
     /*
     Test case:
@@ -241,16 +245,16 @@
     on any mhchem site
     */
     function alignLines(text){
-        text = text.replace(/^[\s\n]+/, "").replace(/[\s\n]+$/, "");
+        text = removeTralingLeadingSpacesAndDollarSigns(text);
 
         var lines = text.split("\n"),
             i = 0, len = lines.length,
             line, output = "";
 
         for(; i < len; i++){
-            line = lines[i];
-            // removing trailing spaces/$$ first
-            line = line.replace(/^[\s\$]+/, "").replace(/[\s\$]+$/, "");
+            line = lines[i];                       
+            line = removeTralingLeadingSpacesAndDollarSigns(line);
+            
             if(ismhchemSite) line = insertReactionArrowsAlignment(line);
             else line = line.replace(/(=|<=|>=|>|<|\\geq|\\leq)/g, "&$1");
 
@@ -261,7 +265,7 @@
         // remove last two backslashes
         output = output.substring(0, output.length - 3) + "\n";
 
-        output = "$$\\begin{align}\n" + output + "\\end{align}$$";
+        output = "\begin{align}\n" + output + "\\end{align}";
         return output;
     }
 
@@ -271,9 +275,9 @@
             // replace reaction arrows first
             .replace(/(->|<-|<->|<-->|<=>|<=>>|<<=>)/, "&$1")
             // there can still be math equations on this site
-            .replace(/(<?)=/, function(wholeMatch, $1){
-            return $1 ? wholeMatch : "&=";
-        });
+            .replace(/([\<\w]?)=([\w]?)/, function(wholeMatch, $1, $2){
+                return $1 || $2 ? wholeMatch : "&=";
+            });
 
         return line;
     }
