@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Markdown Shortcuts for StackExchange
-// @version      1.1.0
+// @version      1.1.1
 // @description  easily insert common (cuztomizable) LaTeX shortcuts
 // @author       Gaurang Tandon
 // @match        *://*.askubuntu.com/*
@@ -46,8 +46,8 @@
         SPECIAL_SHORTCUTS = {
             // keycode: function to execute on the selected text (see
             // (it is the "helper" in function handleTextConversion)
-            "A": fraciify,
-            "S": alignLines
+            "S": fraciify,
+            "A": alignLines
         },
         mhchemSites = /(chemistry|biology)\.stackexchange/,
         ismhchemSite = mhchemSites.test(URL);
