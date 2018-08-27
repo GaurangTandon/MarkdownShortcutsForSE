@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Markdown Shortcuts for StackExchange
-// @version      1.2.0
+// @version      1.2.1
 // @description  easily insert common (cuztomizable) LaTeX shortcuts
 // @author       Gaurang Tandon
 // @match        *://*.askubuntu.com/*
@@ -56,11 +56,13 @@
         return valMid.replace(/<sub>(\d+)<\/sub>/g, function($0, $1){
             return $1;
         }).replace(/<sub>([^\<]+)<\/sub>/g, function($0, $1){
-            return "_{" + $1 + "}";
+            return $1.length > 1 ? "_{" + $1 + "}" : "_" + $1;
         }).replace(/<sup>([\+\-]?)(\d+)([\+\-]?)<\/sup>/g, function($0, $1, $2, $3){
             return "^" + $2 + ($1 || $3);
         }).replace(/<sup>([^\<]+)<\/sup>/g, function($0, $1){
-            return "^{" + $1 + "}";
+            return $1.length > 1 ? "^{" + $1 + "}" : "^" + $1;
+        }).replace(/([a-z])_\{?(\d+)\}?/gi, function($0, $1, $2){
+            return $1 + $2;
         });
     }
 
@@ -73,6 +75,8 @@
             return "^" + ($1 || $3) + $2;
         }).replace(/<sup>([^\<]+)<\/sup>/g, function($0, $1){
             return "^{" + $1 + "}";
+        }).replace(/([a-z])_\{?(\d+)\}?/gi, function($0, $1, $2){
+            return $1 + $2;
         });
     }
 
