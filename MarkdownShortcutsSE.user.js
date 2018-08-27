@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Markdown Shortcuts for StackExchange
-// @version      1.1.1
+// @version      1.2.0
 // @description  easily insert common (cuztomizable) LaTeX shortcuts
 // @author       Gaurang Tandon
 // @match        *://*.askubuntu.com/*
@@ -76,7 +76,7 @@
         });
     }
 
-    function wrap(textarea, start, end){
+    function wrap(textarea, start, end, isLatexCommand){
         // same wrapper code on either side (`$...$`)
         if(typeof end === "undefined") end = start;
 
@@ -122,6 +122,10 @@
                 valMid = convertPUSubSuperScripts(valMid);
             }
 
+            if(isLatexCommand && /^\{.+\}$/.test(valMid)){
+                valMid = valMid.substring(1, valMid.length - 1);
+            }
+
             generatedWrapper = start + valMid + end;
 
             textarea.value = valBefore + generatedWrapper + valAfter;
@@ -157,7 +161,7 @@
             end += singleMJDelimiter;
         }
 
-        wrap(node, begin, end);
+        wrap(node, begin, end, true);
 	}
 
     function handleTextConversion(node, helper, isCtrlKeyDown){
