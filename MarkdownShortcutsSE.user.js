@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Markdown Shortcuts for StackExchange
-// @version      1.2.2
+// @version      1.2.3
 // @description  easily insert common (cuztomizable) LaTeX shortcuts
 // @author       Gaurang Tandon
 // @match        *://*.askubuntu.com/*
@@ -109,8 +109,21 @@
             trimmedSelection = valMid.match(/^(\s*)(\S?(?:.|\n|\r)*\S)(\s*)$/) || ["", "", "", ""],
             command = start + end;
 
-        // determine if text is currently wrapped (also see #4)
-        if(valBefore.endsWith(start) && valAfter.startsWith(end) && !(valBefore[valBefore.length - 2] === "$" && valAfter[1] === "$" && start === "$" && end === "$")){
+        // special wrapping check (see #5)
+        // when double dollarify occurs for `...$A$...` it unwraps the dollar pair and
+        // then inserts double-dollar-pairs of its own
+        var endsWithSingleButNotDoubleDollarFlag = false;
+        valBefore.replace(/(.)?\$$/, function(wholeMatch, $1){
+            endsWithSingleButNotDoubleDollarFlag = $1 ? $1 !== "$" : true;
+        });
+
+        if(start === "$$" && end === "$$" && endsWithSingleButNotDoubleDollarFlag && /^\$([^\$])?/.test(valAfter)){
+            valBefore = valBefore.substring(0, valBefore.length - 1);
+            valAfter = valAfter.substring(1);
+        }
+
+        // determine if text is currently wrapped
+        if(valBefore.endsWith(start) && valAfter.startsWith(end)){
             textarea.value = valBefore.substring(0, valBefore.length - startLen) + valMid + valAfter.substring(endLen);
             textarea.selectionStart = valBefore.length - startLen;
             textarea.selectionEnd = (valBefore + valMid).length - startLen;
