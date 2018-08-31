@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Markdown Shortcuts for StackExchange
-// @version      1.2.1
+// @version      1.2.2
 // @description  easily insert common (cuztomizable) LaTeX shortcuts
 // @author       Gaurang Tandon
 // @match        *://*.askubuntu.com/*
@@ -109,8 +109,8 @@
             trimmedSelection = valMid.match(/^(\s*)(\S?(?:.|\n|\r)*\S)(\s*)$/) || ["", "", "", ""],
             command = start + end;
 
-        // determine if text is currently wrapped
-        if(valBefore.endsWith(start) && valAfter.startsWith(end)){
+        // determine if text is currently wrapped (also see #4)
+        if(valBefore.endsWith(start) && valAfter.startsWith(end) && !(valBefore[valBefore.length - 2] === "$" && valAfter[1] === "$" && start === "$" && end === "$")){
             textarea.value = valBefore.substring(0, valBefore.length - startLen) + valMid + valAfter.substring(endLen);
             textarea.selectionStart = valBefore.length - startLen;
             textarea.selectionEnd = (valBefore + valMid).length - startLen;
@@ -283,8 +283,8 @@
             // replace reaction arrows first
             .replace(/(->|<-|<->|<-->|<=>|<=>>|<<=>)/, "&$1")
             // there can still be math equations on this site
-            .replace(/([\<\w]?)=([\w]?)/, function(wholeMatch, $1, $2){
-                return $1 || $2 ? wholeMatch : "&=";
+            .replace(/([\<])?=/, function(wholeMatch, $1){
+                return $1 ? wholeMatch : "&=";
             });
 
         return line;
