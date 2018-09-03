@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Markdown Shortcuts for StackExchange
-// @version      1.3.0
+// @version      1.3.1
 // @description  easily insert common (cuztomizable) LaTeX shortcuts
 // @author       Gaurang Tandon
 // @match        *://*.askubuntu.com/*
@@ -347,7 +347,7 @@
             containerDIV = document.createElement("div");
             containerDIV.id = "msse-list-popup";
             containerDIV.classList.add("msse-overlay");
-            containerDIV.innerHTML = getKeybindingsList();
+            containerDIV.innerHTML = `<h2>MSSE: These are your keyboard shortcuts:</h2>` + getKeybindingsList();
 
             document.body.appendChild(containerDIV);
         }
