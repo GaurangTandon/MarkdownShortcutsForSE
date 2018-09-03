@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Markdown Shortcuts for StackExchange
-// @version      1.2.3
+// @version      1.3.0
 // @description  easily insert common (cuztomizable) LaTeX shortcuts
 // @author       Gaurang Tandon
 // @match        *://*.askubuntu.com/*
@@ -19,7 +19,8 @@
 // @exclude      *://elections.stackexchange.com/*
 // @exclude      *://openid.stackexchange.com/*
 // @exclude      *://stackexchange.com/*
-// @grant        none
+
+// @grant        GM_addStyle
 // ==/UserScript==
 
 (function() {
@@ -303,6 +304,72 @@
         return line;
     }
 
+    function getKeybindingsList(){
+        function getKeys(shortcut){
+            var keys = "";
+
+            for(var len = shortcut.length, i = len - 2; i >= 0; i--){
+                keys = shortcut[i].replace(/Key$/, "") + " + " + keys;
+            }
+
+            // remove last + sign
+            return keys.substring(0, keys.length - 3);
+        }
+
+        var list = "<ul>", shortcut, specials;
+
+        for(var i = 0, len = SHORTCUTS.length; i < len; i++){
+            shortcut = SHORTCUTS[i];
+            list += "<li>" + getKeys(shortcut) +
+                " = <pre>" + shortcut[shortcut.length - 1] + "</pre></li>";
+        }
+
+        list += `</ul>Prepend Ctrl to any one of the above to surround them with an extra $ pair<br><br>
+        <b>The following are special shortcuts:</b><ul>`;
+
+        i = 0; specials = Object.keys(SPECIAL_SHORTCUTS); len = specials.length;
+        for(; i < len; i++){
+            shortcut = specials[i];
+            list += "<li>alt + " + shortcut + " = " + SPECIAL_SHORTCUTS[shortcut].name + "</li>" ;
+        }
+
+        list += "</ul>";
+
+        return list;
+    }
+
+    var handleKeyUp;
+    (function(){
+        var questionKeyCode = 191, keyCode, containerDIV,
+            helpBoxVisibleClass = "shown";
+
+        function setupKeyBindingList(){
+            containerDIV = document.createElement("div");
+            containerDIV.id = "msse-list-popup";
+            containerDIV.classList.add("msse-overlay");
+            containerDIV.innerHTML = getKeybindingsList();
+
+            document.body.appendChild(containerDIV);
+        }
+
+        setupKeyBindingList();
+
+        handleKeyUp = function(event){
+            keyCode = event.keyCode;
+
+            if(event.altKey && event.shiftKey && keyCode === questionKeyCode){
+                if(containerDIV.classList.contains(helpBoxVisibleClass)){
+                    containerDIV.classList.remove(helpBoxVisibleClass);
+                } else {
+                    containerDIV.classList.add(helpBoxVisibleClass);
+                    // -200px is half the width of the container
+                    containerDIV.style.left = "calc(" + (window.innerWidth / 2) + "px - 250px)";
+                    containerDIV.style.top = "calc(" + window.scrollY + "px + 20%)";
+                }
+            }
+        };
+    })();
+
     function handleKeyDown(event) {
         var node = event.target, keyCode = event.keyCode,
             charPressed = String.fromCharCode(keyCode).toUpperCase(),
@@ -345,4 +412,42 @@
     }
 
 	document.body.addEventListener("keydown", handleKeyDown);
+    document.body.addEventListener("keyup", handleKeyUp);
+
+    GM_addStyle(`
+.msse-overlay{
+    z-index: 3000;
+    display: none;
+
+    position: absolute;
+    left: 20%;
+
+    width: 500px;
+    max-width: 80%;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(36,39,41,0.3);
+    background-color: #FFF;
+    border: solid 1px #9fa6ad;
+}
+
+.msse-overlay.shown{
+     display: block;
+}
+
+.msse-overlay h2{
+    font-weight: bold; font-size: 18px;
+}
+
+.msse-overlay pre{
+     display: inline;
+}
+
+.msse-overlay ul:first-of-type li{
+    margin-bottom: 15px;
+}
+
+.msse-overlay ul:nth-of-type(2) {
+    margin-top: 10px;
+}
+`);
 })();
