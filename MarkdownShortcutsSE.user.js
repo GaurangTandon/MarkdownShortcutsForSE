@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Markdown Shortcuts for StackExchange
-// @version      1.3.1
+// @version      1.4.0
 // @description  easily insert common (cuztomizable) LaTeX shortcuts
 // @author       Gaurang Tandon
 // @match        *://*.askubuntu.com/*
@@ -64,7 +64,11 @@
             return $1.length > 1 ? "^{" + $1 + "}" : "^" + $1;
         }).replace(/([a-z])_\{?(\d+)\}?/gi, function($0, $1, $2){
             return $1 + $2;
-        });
+        })
+        .replace(/(\\(long)?leftarrow|\&\#8592;|\&larr;|←)/g, "<-")
+        .replace(/(\\(long)?rightarrow|\&\#8594;|\&rarr;|→)/g, "->")
+        .replace(/(\\(long)?leftrightarrow|\&\#8596;|\&harr;|↔)/g, "<->")
+        .replace(/(\\(leftrightharpoons|rightleftharpoons)|\&\#8660;|\&hArr;|⇔)/g, "<=>");
     }
 
     function convertPUSubSuperScripts(valMid){
