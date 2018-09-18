@@ -293,7 +293,7 @@
 	function alignLines(text) {
 		text = removeTrailingLeadingSpacesAndDollarSigns(text);
 
-		var lines = text.split("\n"),
+		var lines = text.split(/\\\\\n|\n|\\\\/g),
 			i = 0,
 			len = lines.length,
 			line,
@@ -302,11 +302,12 @@
 		for (; i < len; i++) {
 			line = lines[i];
 			line = removeTrailingLeadingSpacesAndDollarSigns(line);
+			if (line === "") continue;
 
 			if (ismhchemSite) line = insertReactionArrowsAlignment(line);
 			else line = line.replace(/(=|<=|>=|>|<|\\geq|\\leq)/g, "&$1");
 
-			line += "\\\\\n";
+			if (!/\\\\\n?/.test(line)) line += "\\\\\n";
 			output += line;
 		}
 
