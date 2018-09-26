@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Markdown Shortcuts for StackExchange
-// @version      1.6.0
+// @version      1.7.0
 // @description  easily insert common (cuztomizable) LaTeX shortcuts
 // @author       Gaurang Tandon
 // @match        *://*.askubuntu.com/*
@@ -52,11 +52,22 @@
 			S: fraciify,
 			A: alignLines
 		},
-		mhchemSites = /(chemistry|biology)\.stackexchange/,
-		ismhchemSite = mhchemSites.test(URL);
+		MHCHEM_SITE_REGEX = /(chemistry|biology)\.stackexchange/,
+		IS_MHCHEM_SITE = MHCHEM_SITE_REGEX.test(URL);
 
-	function convertCESubSuperScripts(valMid) {
-		return valMid
+	/**
+	 * converts:
+	 * 1. sub/supscripts into ce counterparts
+	 * 2. long garbage arrows into less-garbage
+	 * 3. mathjax arrows into ce arrows
+	 * @param {String} text the selected text to be processed
+	 */
+	function specializedCEExtensions(text) {
+		return text
+			.replace(/-+>|=+>/g, "->")
+			.replace(/\$([_^])\{?(\d+)\}?\$/g, function($0, $operator, $digits) {
+				return $operator + ($digits.length > 1 ? "{" + $digits + "}" : $digits);
+			})
 			.replace(/<sub>(\d+)<\/sub>/g, function($0, $1) {
 				return $1;
 			})
@@ -69,7 +80,7 @@
 			.replace(/<sup>([^\<]+)<\/sup>/g, function($0, $1) {
 				return $1.length > 1 ? "^{" + $1 + "}" : "^" + $1;
 			})
-			.replace(/([a-z])_\{?(\d+)\}?/gi, function($0, $1, $2) {
+			.replace(/([a-z\(\)])_\{?(\d+)\}?/gi, function($0, $1, $2) {
 				return $1 + $2;
 			})
 			.replace(/(\\(long)?leftarrow|\&\#8592;|\&larr;|←)/g, "<-")
@@ -151,7 +162,7 @@
 			valMid = trimmedSelection[2];
 
 			if (command.indexOf("\\ce{}") > -1) {
-				valMid = convertCESubSuperScripts(valMid);
+				valMid = specializedCEExtensions(valMid);
 			} else if (command.indexOf("\\pu{}") > -1) {
 				valMid = convertPUSubSuperScripts(valMid);
 			}
@@ -304,7 +315,7 @@
 			line = removeTrailingLeadingSpacesAndDollarSigns(line);
 			if (line === "") continue;
 
-			if (ismhchemSite) line = insertReactionArrowsAlignment(line);
+			if (IS_MHCHEM_SITE) line = insertReactionArrowsAlignment(line);
 			else line = line.replace(/(<=|>=|>|<|=|\\geq|\\leq)/g, "&$1");
 
 			if (!/\\\\\n?/.test(line)) line += "\\\\\n";
@@ -322,16 +333,29 @@
 	function insertReactionArrowsAlignment(line) {
 		line = line
 			// replace reaction arrows first
-			.replace(/(\&)?(->|<-|<->|<-->|<=>|<=>>|<<=>)/, function($0, $1, $2){
-				return $1 ? $0: "&" + $2;
+			.replace(/(\&)?(->|<-|<->|<-->|<=>|<=>>|<<=>)/, function($0, $1, $2) {
+				return $1 ? $0 : "&" + $2;
 			})
 			// replace = inside CE taking care of #6
-			.replace(/(\\ce\{.*?)([<a-z\d])?=([a-z\d])?(.*?\})/i, function($0, $initialCEcontent, $leftchar, $rightchar, $laterCEContent) {
-				return !($leftchar && $rightchar) && $leftchar !== "<" ? $initialCEcontent + "&=" + $laterCEContent : $0;
+			.replace(/(\\ce\{.*?)([<a-z\d])?=([a-z\d])?(.*?\})/i, function(
+				$0,
+				$initialCEcontent,
+				$leftchar,
+				$rightchar,
+				$laterCEContent
+			) {
+				return !($leftchar && $rightchar) && $leftchar !== "<"
+					? $initialCEcontent + "&=" + $laterCEContent
+					: $0;
 			})
 			// process math equations
-			.replace(/(\\ce\{.*?)?(<=|>=|>|<|=|\\geq|\\leq)(.*?\})?/i, function($0, $initialCEcontent, $sign, $laterCEContent) {
-				return !$initialCEcontent && !$laterCEContent ? "&" + $sign  : $0;
+			.replace(/(\\ce\{.*?)?(<=|>=|>|<|=|\\geq|\\leq)(.*?\})?/i, function(
+				$0,
+				$initialCEcontent,
+				$sign,
+				$laterCEContent
+			) {
+				return !$initialCEcontent && !$laterCEContent ? "&" + $sign : $0;
 			});
 
 		return line;
