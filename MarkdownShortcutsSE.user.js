@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Markdown Shortcuts for StackExchange
-// @version      1.5.0
+// @version      1.6.0
 // @description  easily insert common (cuztomizable) LaTeX shortcuts
 // @author       Gaurang Tandon
 // @match        *://*.askubuntu.com/*
@@ -305,7 +305,7 @@
 			if (line === "") continue;
 
 			if (ismhchemSite) line = insertReactionArrowsAlignment(line);
-			else line = line.replace(/(=|<=|>=|>|<|\\geq|\\leq)/g, "&$1");
+			else line = line.replace(/(<=|>=|>|<|=|\\geq|\\leq)/g, "&$1");
 
 			if (!/\\\\\n?/.test(line)) line += "\\\\\n";
 			output += line;
@@ -322,10 +322,16 @@
 	function insertReactionArrowsAlignment(line) {
 		line = line
 			// replace reaction arrows first
-			.replace(/(->|<-|<->|<-->|<=>|<=>>|<<=>)/, "&$1")
-			// there can still be math equations on this site
-			.replace(/([\<])?=/, function(wholeMatch, $1) {
-				return $1 ? wholeMatch : "&=";
+			.replace(/(\&)?(->|<-|<->|<-->|<=>|<=>>|<<=>)/, function($0, $1, $2){
+				return $1 ? $0: "&" + $2;
+			})
+			// replace = inside CE taking care of #6
+			.replace(/(\\ce\{.*?)([<a-z\d])?=([a-z\d])?(.*?\})/i, function($0, $initialCEcontent, $leftchar, $rightchar, $laterCEContent) {
+				return !($leftchar && $rightchar) && $leftchar !== "<" ? $initialCEcontent + "&=" + $laterCEContent : $0;
+			})
+			// process math equations
+			.replace(/(\\ce\{.*?)?(<=|>=|>|<|=|\\geq|\\leq)(.*?\})?/i, function($0, $initialCEcontent, $sign, $laterCEContent) {
+				return !$initialCEcontent && !$laterCEContent ? "&" + $sign  : $0;
 			});
 
 		return line;
