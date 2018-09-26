@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Markdown Shortcuts for StackExchange
-// @version      1.7.0
+// @version      1.7.1
 // @description  easily insert common (cuztomizable) LaTeX shortcuts
 // @author       Gaurang Tandon
 // @match        *://*.askubuntu.com/*
@@ -52,7 +52,7 @@
 			S: fraciify,
 			A: alignLines
 		},
-		MHCHEM_SITE_REGEX = /(chemistry|biology)\.stackexchange/,
+		MHCHEM_SITE_REGEX = /(chemistry|biology)(\.meta)?\.stackexchange/,
 		IS_MHCHEM_SITE = MHCHEM_SITE_REGEX.test(URL);
 
 	/**
