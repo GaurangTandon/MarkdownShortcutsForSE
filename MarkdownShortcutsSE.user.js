@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Markdown Shortcuts for StackExchange
-// @version      1.7.2
+// @version      1.7.3
 // @description  easily insert common (cuztomizable) LaTeX shortcuts
 // @author       Gaurang Tandon
 // @match        *://*.askubuntu.com/*
@@ -63,7 +63,8 @@
 	 * @param {String} text the selected text to be processed
 	 */
 	function specializedCEExtensions(text) {
-		var temp = Date.now(), regexTemp = new RegExp(temp, "g");
+		var temp = Date.now(),
+			regexTemp = new RegExp(temp, "g");
 
 		return (
 			text
@@ -333,7 +334,8 @@
 			if (IS_MHCHEM_SITE) line = insertReactionArrowsAlignment(line);
 			else line = line.replace(/(<=|>=|>|<|=|\\geq|\\leq)/g, "&$1");
 
-			if (!/\\\\\n?/.test(line)) line += "\\\\\n";
+			if (/\\begin\{.*?\}$/.test(line) || /&=$/.test(line)) line += "\n";
+			else if (!/\\\\\n?$/.test(line)) line += "\\\\\n";
 			output += line;
 		}
 
