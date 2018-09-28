@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Markdown Shortcuts for StackExchange
-// @version      1.7.1
+// @version      1.7.2
 // @description  easily insert common (cuztomizable) LaTeX shortcuts
 // @author       Gaurang Tandon
 // @match        *://*.askubuntu.com/*
@@ -63,30 +63,45 @@
 	 * @param {String} text the selected text to be processed
 	 */
 	function specializedCEExtensions(text) {
-		return text
-			.replace(/-+>|=+>/g, "->")
-			.replace(/\$([_^])\{?(\d+)\}?\$/g, function($0, $operator, $digits) {
-				return $operator + ($digits.length > 1 ? "{" + $digits + "}" : $digits);
-			})
-			.replace(/<sub>(\d+)<\/sub>/g, function($0, $1) {
-				return $1;
-			})
-			.replace(/<sub>([^\<]+)<\/sub>/g, function($0, $1) {
-				return $1.length > 1 ? "_{" + $1 + "}" : "_" + $1;
-			})
-			.replace(/<sup>([\+\-]?)(\d+)([\+\-]?)<\/sup>/g, function($0, $1, $2, $3) {
-				return "^" + $2 + ($1 || $3);
-			})
-			.replace(/<sup>([^\<]+)<\/sup>/g, function($0, $1) {
-				return $1.length > 1 ? "^{" + $1 + "}" : "^" + $1;
-			})
-			.replace(/([a-z\(\)])_\{?(\d+)\}?/gi, function($0, $1, $2) {
-				return $1 + $2;
-			})
-			.replace(/(\\(long)?leftarrow|\&\#8592;|\&larr;|←)/g, "<-")
-			.replace(/(\\(long)?rightarrow|\&\#8594;|\&rarr;|→)/g, "->")
-			.replace(/(\\(long)?leftrightarrow|\&\#8596;|\&harr;|↔)/g, "<->")
-			.replace(/(\\(leftrightharpoons|rightleftharpoons)|\&\#8660;|\&hArr;|⇔)/g, "<=>");
+		var temp = Date.now(), regexTemp = new RegExp(temp, "g");
+
+		return (
+			text
+				.replace(/<-+\s+-+>/g, "<-->")
+				.replace(/<---+>/g, "<-->")
+				// preserve the <--> safely
+				.replace(/<-->/g, temp)
+				.replace(/-+>/g, "->")
+				.replace(/<-+/g, "<-")
+				// now restore it back
+				.replace(regexTemp, "<-->")
+				.replace(/<=+>/g, temp)
+				.replace(/=+>/g, "->")
+				.replace(/<=+/g, "<-")
+				.replace(regexTemp, "<=>")
+				.replace(/\$([_^])\{?(\d+)\}?\$/g, function($0, $operator, $digits) {
+					return $operator + ($digits.length > 1 ? "{" + $digits + "}" : $digits);
+				})
+				.replace(/<sub>(\d+)<\/sub>/g, function($0, $1) {
+					return $1;
+				})
+				.replace(/<sub>([^\<]+)<\/sub>/g, function($0, $1) {
+					return $1.length > 1 ? "_{" + $1 + "}" : "_" + $1;
+				})
+				.replace(/<sup>([\+\-]?)(\d+)([\+\-]?)<\/sup>/g, function($0, $1, $2, $3) {
+					return "^" + $2 + ($1 || $3);
+				})
+				.replace(/<sup>([^\<]+)<\/sup>/g, function($0, $1) {
+					return $1.length > 1 ? "^{" + $1 + "}" : "^" + $1;
+				})
+				.replace(/([a-z\(\)])_\{?(\d+)\}?/gi, function($0, $1, $2) {
+					return $1 + $2;
+				})
+				.replace(/(\\(long)?leftarrow|\&\#8592;|\&larr;|←)/g, "<-")
+				.replace(/(\\(long)?rightarrow|\&\#8594;|\&rarr;|→)/g, "->")
+				.replace(/(\\(long)?leftrightarrow|\&\#8596;|\&harr;|↔)/g, "<->")
+				.replace(/(\\(leftrightharpoons|rightleftharpoons)|\&\#8660;|\&hArr;|⇔)/g, "<=>")
+		);
 	}
 
 	function convertPUSubSuperScripts(valMid) {
