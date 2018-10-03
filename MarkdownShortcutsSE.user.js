@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Markdown Shortcuts for StackExchange
-// @version      1.7.3
+// @version      1.8.0
 // @description  easily insert common (cuztomizable) LaTeX shortcuts
 // @author       Gaurang Tandon
 // @match        *://*.askubuntu.com/*
@@ -349,30 +349,32 @@
 	// reaction arrows as seen on https://mhchem.github.io/MathJax-mhchem/
 	function insertReactionArrowsAlignment(line) {
 		line = line
-			// replace reaction arrows first
-			.replace(/(\&)?(->|<-|<->|<-->|<=>|<=>>|<<=>)/, function($0, $1, $2) {
+			// replace unambiguous case first
+			// the only place where it goes problematic is when 
+			// = is inside CE
+			.replace(/(\&)?(>|<|->|<-|<->|<-->|<=|>=|<=>|<=>>|<<=>|\\leq|\\geq)/, function($0, $1, $2) {
 				return $1 ? $0 : "&" + $2;
 			})
 			// replace = inside CE taking care of #6
-			.replace(/(\\ce\{.*?)([<a-z\d])?=([a-z\d])?(.*?\})/i, function(
+			.replace(/(\\ce\{.*)([<a-z\d])?=([a-z\d])?(.*?\})/i, function(
 				$0,
 				$initialCEcontent,
 				$leftchar,
 				$rightchar,
 				$laterCEContent
 			) {
+				$leftchar = $leftchar || $initialCEcontent.charAt($initialCEcontent.length - 1);
 				return !($leftchar && $rightchar) && $leftchar !== "<"
 					? $initialCEcontent + "&=" + $laterCEContent
 					: $0;
 			})
 			// process math equations
-			.replace(/(\\ce\{.*?)?(<=|>=|>|<|=|\\geq|\\leq)(.*?\})?/i, function(
+			.replace(/(\\ce\{[^\}=]*?)?=([^\}=]*?\})?/i, function(
 				$0,
 				$initialCEcontent,
-				$sign,
 				$laterCEContent
 			) {
-				return !$initialCEcontent && !$laterCEContent ? "&" + $sign : $0;
+				return !$initialCEcontent && !$laterCEContent ? "&=" : $0;
 			});
 
 		return line;
