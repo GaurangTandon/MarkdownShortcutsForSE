@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Markdown Shortcuts for StackExchange
-// @version      1.8.0
+// @version      1.9.0
 // @description  easily insert common (cuztomizable) LaTeX shortcuts
 // @author       Gaurang Tandon
 // @match        *://*.askubuntu.com/*
@@ -240,7 +240,10 @@
 		valBefore += trimmedSelection[1];
 		valAfter = trimmedSelection[3] + valAfter;
 		valMid = trimmedSelection[2];
-		middleInsert = helper(valMid, isCtrlKeyDown);
+		middleInsert = helper(node, valMid, isCtrlKeyDown);
+
+		// let helpers quit, see fraciify
+		if(middleInsert === false) return;
 
 		node.value = valBefore + middleInsert + valAfter;
 		node.selectionStart = valBefore.length;
@@ -249,7 +252,13 @@
 
 	// refer to http://jsbin.com/kokahupevi/edit?js,console
 	// for sample inputs and tests
-	function fraciify(text, isCtrlKeyDown) {
+	function fraciify(node, text, isCtrlKeyDown) {
+		// #19
+		if(text == ""){
+			insertLatexCommand(node, "\\frac{|}{}", isCtrlKeyDown);
+			return false;
+		}
+
 		var firstBracketPairIndices = getFirstBracketPairIndices(text),
 			firstIdx = firstBracketPairIndices[0],
 			secondIdx = firstBracketPairIndices[1],
@@ -261,12 +270,12 @@
 
 		if (firstIdx != -1) {
 			parentheticalText = text.substring(firstIdx + 1, secondIdx);
-			text = text.substring(0, firstIdx) + fraciify(parentheticalText) + text.substring(secondIdx + 1);
-			output = fraciify(text);
+			text = text.substring(0, firstIdx) + fraciify(node, parentheticalText) + text.substring(secondIdx + 1);
+			output = fraciify(node, text);
 		} else if (slashIdx != -1) {
 			beforeSlash = text.substring(0, slashIdx);
 			afterSlash = text.substring(slashIdx + 1);
-			text = "\\frac{" + fraciify(beforeSlash) + "}{" + fraciify(afterSlash) + "}";
+			text = "\\frac{" + fraciify(node, beforeSlash) + "}{" + fraciify(node, afterSlash) + "}";
 			output = text;
 		} else output = text;
 
@@ -317,7 +326,7 @@
     \end{align}$$
     on any mhchem site
     */
-	function alignLines(text) {
+	function alignLines(node, text) {
 		text = removeTrailingLeadingSpacesAndDollarSigns(text);
 
 		var lines = text.split(/\\\\\n|\n|\\\\/g),
