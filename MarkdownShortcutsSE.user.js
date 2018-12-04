@@ -572,7 +572,7 @@
 }
 
 .msse-overlay ul:first-of-type li{
-    margin-bottom: 15px;
+	margin-bottom: 5px;
 }
 
 .msse-overlay ul:nth-of-type(2) {
