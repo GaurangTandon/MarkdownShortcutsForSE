@@ -522,7 +522,7 @@
 
 			allModifiersPressed = true;
 
-			if (command[commandLength - 2] === charPressed) {
+			if (command[commandLength - 2].toUpperCase() === charPressed) {
 				for (var j = 0; j < commandLength - 2; j++) {
 					if (!event[command[j]]) allModifiersPressed = false;
 				}
