@@ -66,6 +66,8 @@
 		var temp = Date.now(),
 			regexTemp = new RegExp(temp, "g");
 
+		console.log(text);
+
 		return (
 			text
 				.replace(/<-+\s+-+>/g, "<-->")
@@ -95,7 +97,11 @@
 				.replace(/<sup>([^\<]+)<\/sup>/g, function($0, $1) {
 					return $1.length > 1 ? "^{" + $1 + "}" : "^" + $1;
 				})
-				.replace(/([a-z\(\)])_\{?(\d+)\}?/gi, function($0, $1, $2) {
+				.replace(/([a-z\(\)])_\{?(\d+)(.)?/gi, function($0, $1, $2, $3) {
+					// issues#17
+					// don't perform any replacement unless all digits
+					// are strictly enclosed between two curly braces
+					if ($3 != "}") return $0;
 					return $1 + $2;
 				})
 				.replace(/(\\(long)?leftarrow|\&\#8592;|\&larr;|←)/g, "<-")
