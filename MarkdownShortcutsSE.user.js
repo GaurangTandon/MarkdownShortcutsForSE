@@ -124,6 +124,20 @@
 			});
 	}
 
+	/**
+	 *
+	 * @param {String} string the string to escape
+	 * @param {Boolean} shouldUnescape true if should unescape (\\% -> %)
+	 */
+	function escapeMathjaxComments(string, shouldUnescape) {
+		if (shouldUnescape) {
+			return string.replace(/\\%/g, "%");
+		} else {
+			// negative lookbehind if string is already escaped.
+			return string.replace(/(.)?%/g, ($0, $1) => ($1 ? ($1 == "\\" ? $0 : $0[0] + "\\%") : $0[0] + "\\%"));
+		}
+	}
+
 	function wrap(textarea, start, end, isLatexCommand) {
 		// same wrapper code on either side (`$...$`)
 		if (typeof end === "undefined") end = start;
@@ -168,7 +182,10 @@
 
 		// determine if text is currently wrapped
 		if (valBefore.endsWith(start) && valAfter.startsWith(end)) {
-			textarea.value = valBefore.substring(0, valBefore.length - startLen) + valMid + valAfter.substring(endLen);
+			textarea.value =
+				valBefore.substring(0, valBefore.length - startLen) +
+				escapeMathjaxComments(valMid, true) +
+				valAfter.substring(endLen);
 			textarea.selectionStart = valBefore.length - startLen;
 			textarea.selectionEnd = (valBefore + valMid).length - startLen;
 			textarea.focus();
@@ -186,6 +203,8 @@
 			if (isLatexCommand && /^\{.+\}$/.test(valMid)) {
 				valMid = valMid.substring(1, valMid.length - 1);
 			}
+
+			if (start.startsWith("$")) valMid = escapeMathjaxComments(valMid);
 
 			generatedWrapper = start + valMid + end;
 
@@ -243,7 +262,11 @@
 		middleInsert = helper(node, valMid, isCtrlKeyDown);
 
 		// let helpers quit, see fraciify
-		if(middleInsert === false) return;
+		if (!middleInsert) return;
+
+		if (isCtrlKeyDown) {
+			middleInsert = escapeMathjaxComments(middleInsert);
+		}
 
 		node.value = valBefore + middleInsert + valAfter;
 		node.selectionStart = valBefore.length;
@@ -254,7 +277,7 @@
 	// for sample inputs and tests
 	function fraciify(node, text, isCtrlKeyDown) {
 		// #19
-		if(text == ""){
+		if (text == "") {
 			insertLatexCommand(node, "\\frac{|}{}", isCtrlKeyDown);
 			return false;
 		}
@@ -345,6 +368,9 @@
 
 			if (/\\begin\{.*?\}$/.test(line) || /&=$/.test(line)) line += "\n";
 			else if (!/\\\\\n?$/.test(line)) line += "\\\\\n";
+
+			line = escapeMathjaxComments(line);
+
 			output += line;
 		}
 
@@ -359,7 +385,7 @@
 	function insertReactionArrowsAlignment(line) {
 		line = line
 			// replace unambiguous case first
-			// the only place where it goes problematic is when 
+			// the only place where it goes problematic is when
 			// = is inside CE
 			.replace(/(\&)?(>|<|->|<-|<->|<-->|<=|>=|<=>|<=>>|<<=>|\\leq|\\geq)/, function($0, $1, $2) {
 				return $1 ? $0 : "&" + $2;
@@ -378,11 +404,7 @@
 					: $0;
 			})
 			// process math equations
-			.replace(/(\\ce\{[^\}=]*?)?=([^\}=]*?\})?/i, function(
-				$0,
-				$initialCEcontent,
-				$laterCEContent
-			) {
+			.replace(/(\\ce\{[^\}=]*?)?=([^\}=]*?\})?/i, function($0, $initialCEcontent, $laterCEContent) {
 				return !$initialCEcontent && !$laterCEContent ? "&=" : $0;
 			});
 
